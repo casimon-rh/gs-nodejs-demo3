@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "order"
+		},
+		{
+			"path": "payment"
+		},
+		{
+			"path": "shipment"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/*.js": true
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"christian-kohler.npm-intellisense",
+			"humao.rest-client",
+			"ms-azuretools.vscode-docker",
+			"aaron-bond.better-comments"
+		]
+	}
+}

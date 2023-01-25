@@ -1,0 +1,13 @@
+### Test post to order
+
+POST http://localhost:3001/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "amount": 0,
+  "id": "1",
+  "shipment": {
+    "id": "2",
+    "directions":"home"
+  }
+}

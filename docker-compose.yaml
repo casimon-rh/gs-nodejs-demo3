@@ -1,0 +1,62 @@
+version: "3"
+services:
+  order:
+    container_name: order
+    image: docker.io/library/order:breaker
+    restart: always
+    build: order/.
+    hostname: order
+    pull_policy: build
+    networks:
+    - circuitbreaker
+    environment:
+    - ID=order
+    - CHAIN_SVC=http://payment:3000/create
+    - JUMPS=4
+    - MONGO_URL=mongodb://mongo:27017
+    - PORT=3000
+    ports:
+    - 3000:3000
+  payment:
+    container_name: payment
+    image: docker.io/library/payment:breaker
+    restart: always
+    build: payment/.
+    hostname: payment
+    pull_policy: build
+    networks:
+    - circuitbreaker
+    environment:
+    - ID=payment
+    - CHAIN_SVC=http://shipment:3000/create
+    - JUMPS=4
+    - MONGO_URL=mongodb://mongo:27017
+    - PORT=3000
+    ports:
+    - 3001:3000
+  shipment:
+    container_name: shipment
+    image: docker.io/library/shipment:breaker
+    restart: always
+    build: shipment/.
+    hostname: shipment
+    pull_policy: build
+    networks:
+    - circuitbreaker
+    environment:
+    - ID=shipment
+    - JUMPS=4
+    - INJECT_ERR=1
+    - MONGO_URL=mongodb://mongo:27017
+    - PORT=3000
+    ports:
+    - 3002:3000
+  mongo:
+    container_name: mongo
+    image: mongo
+    networks:
+    - circuitbreaker
+    volumes:
+      - ./data:/data/db
+networks:
+  circuitbreaker: {}

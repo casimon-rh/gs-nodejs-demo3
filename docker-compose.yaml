@@ -56,6 +56,7 @@ services:
     image: mongo
     networks:
     - circuitbreaker
+    command: mongod --quiet --logpath /dev/null 
     volumes:
       - ./data:/data/db
 networks:

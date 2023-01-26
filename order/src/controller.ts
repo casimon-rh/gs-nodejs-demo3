@@ -2,19 +2,19 @@ import axios, { AxiosResponse } from 'axios'
 import CircuitBreaker from 'opossum'
 import { Request, Response, Express } from 'express'
 import { createOrder, Order } from './db'
-import { errmsg, message } from './messages'
+import { errmsg, message, CustomResponse } from './messages'
 
 const jumps = process.env.JUMPS || 6
 const throwError = () => Math.random() > .6 && process.env.INJECT_ERR === '1'
 
 
-const chain = (endpoint: string, order: Order): Promise<string> =>
+const chain = (endpoint: string, order: Order): Promise<CustomResponse> =>
   new Promise((resolve, reject) =>
     axios.post(endpoint, order.payment)
       .then((response: AxiosResponse) =>
-        resolve(message(response.data))
+        resolve(message({ response: response.data, ...order }))
       ).catch((err: any) =>
-        reject(message(err.response.data))
+        reject(errmsg(err.response.data))
       )
   )
 
@@ -33,10 +33,10 @@ export const routes = (app: Express) => {
     const endpoint = `${process.env.CHAIN_SVC}?count=${count}`
     const myorder = await createOrder(req.body)
     if (throwError())
-      return res.status(502).send(message(errmsg()))
+      return res.status(502).send(errmsg(''))
 
     if (count >= jumps)
-      return res.status(200).send('\nLast')
+      return res.status(200).send(message('\nLast'))
     try {
       const response = await breaker.fire(endpoint, myorder)
       res.status(200).send(response)

@@ -10,9 +10,9 @@ export const routes = (app: Express) => {
     const count = (parseInt(`${req.query['count']}`) || 0) + 1
     const myshipment = await createShipment(req.body)
     if (throwError())
-      return res.status(502).send(message(errmsg()))
+      return res.status(502).send(errmsg(''))
     if (count >= jumps)
-      return res.status(200).send('\nLast')
+      return res.status(200).send(message('\nLast'))
     res.status(200).send({ msg: '\nEnded Transaction', myshipment })
   })
 }
